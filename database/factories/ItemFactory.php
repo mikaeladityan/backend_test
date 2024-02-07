@@ -17,7 +17,10 @@ class ItemFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'barcode' => fake()->unique()->numerify('####'),
+            'item_code' => fake()->words(1, true),
+            'item_name' => fake()->sentence(3),
+            'unit_id' => mt_rand(1, 10),
         ];
     }
 }
