@@ -44,10 +44,8 @@ class UnitController extends Controller
 
             // if not failed
             $data = new Unit();
-            $data->description =  $request->input("description");
-            $data = Unit::create(
-                $data->toArray()
-            );
+            $data->description = $request->input("description");
+            $data = Unit::create($data->toArray());
 
             return response()->json([
                 'status' => true,
@@ -80,16 +78,56 @@ class UnitController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Unit $unit)
+    public function update(Request $request, string $id)
     {
-        //
+        $findId = Unit::find($id);
+        if ($findId == null) {
+            return response()->json([
+                "status" => false,
+                "message" => "Data Unit tidak ditemukan",
+            ], 404);
+        } else {
+            $rules = ["description"  => "required|max:255"];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Gagal melakukan update data",
+                    'data' => $validator->errors(),
+                ], 406)->throwResponse(406, "Bad Request");
+            } else {
+
+                $unit = [
+                    'description' => $request->get("description")
+                ];
+                $data = Unit::where('id', $id)->update($unit);
+                return response()->json([
+                    'status' => true,
+                    'message' => "Berhasil melakukan update data",
+                    'data' => $data
+                ]);
+            }
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Unit $unit)
+    public function destroy(string $id)
     {
-        //
+        $findId = Unit::find($id);
+        if ($findId == null) {
+            return response()->json([
+                "status" => false,
+                "message" => "Data Unit tidak ditemukan",
+            ], 404);
+        } else {
+            $data = $findId->delete();
+            return response()->json([
+                'status' => true,
+                'message' => "Berhasil melakukan hapus data",
+                'data' => $data
+            ]);
+        }
     }
 }
