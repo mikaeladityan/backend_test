@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use PhpParser\Node\Expr\Cast\String_;
 
 class UnitController extends Controller
@@ -28,7 +29,32 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Check rules request input
+        $rules = ["description"  => "required|max:255"];
+        $validator = Validator::make($request->all(), $rules);
+
+        // Check condition if failed
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => "Gagal memasukan data",
+                'data' => $validator->errors(),
+            ], 406)->throwResponse(406, "Bad Request");
+        } else {
+
+            // if not failed
+            $data = new Unit();
+            $data->description =  $request->input("description");
+            $data = Unit::create(
+                $data->toArray()
+            );
+
+            return response()->json([
+                'status' => true,
+                'message' => "Berhasil menyimpan data",
+                'data' => $data
+            ]);
+        }
     }
 
     /**
