@@ -21,4 +21,4 @@ Route::get('/', function () {
 
 Route::resource("/api/items", ItemController::class);
 
-Route::resource("/api/unit", UnitController::class);
+Route::resource("/api/units", UnitController::class);
